@@ -1,5 +1,5 @@
 import {KeyboardAvoidingView, Platform ,StyleSheet, Text, View, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Modal, Dimensions} from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import BackBtn from '../general_comps/BackBtn';
@@ -7,6 +7,42 @@ import Input from '../general_comps/Input';
 import Break from '../general_comps/Break';
 
 export default function Register(props){
+  let [name, setName] = useState('');
+  let [email, setEmail] = useState('');
+  let [password, setPassword] = useState('');
+  let [passConfirm, setPassConfirm] = useState('');
+
+  const user = {
+    name: name,
+    email: email,
+    password: password,
+    passConfirm,
+  };
+
+  const submitUserData = async () => {
+    // console.log(JSON.stringify(user)) 
+  
+    // if(user.password === user.passConfirm){
+      try {
+        const response = await fetch('http://192.168.1.63:3000/api/user', { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(user),
+        });
+      
+        const data = await response.json(); 
+        console.log('Submitted successfully:', data);
+      } catch (error) {
+        console.error('Submission failed:', error);
+      }
+    } 
+    // else {
+    //   console.error('PASSWORD IS NOT THE SAME:', error);
+    // }
+  // }
+  
   return (
     <React.Fragment>
       <Modal animationType='slide' visible={props.up} transparent={true} onRequestClose={() => props.set(!props.up)}>
@@ -19,18 +55,30 @@ export default function Register(props){
 
             <Break />
             <Text style={{fontSize: 33, fontWeight: 'bold', letterSpacing: 2, marginBottom: 25}}>SIGNUP</Text>
-            <Input placeholder='Complete Name'/>
-            <Input placeholder='Email Address'/>
+            <Text>
+            {name}
+            {email}
+            {password}
+            </Text>
+            <Input value={name} onChangeText={setName} placeholder='Complete Name'/>
+            <Input value={email} onChangeText={setEmail} placeholder='Email Address'/>
 
             <Break size={20}/>
 
-            <Input placeholder='Create Password'/>
+            <Input value={password} onChangeText={setPassword} placeholder='Create Password'/>
             <Input placeholder='Confirm Password'/>
 
             <Break size={50}/>
 
             <LinearGradient colors={LG.colors} start={LG.start} end={LG.end} locations={LG.locations} dither={false} style={{borderRadius: 20}}>
-            <TouchableOpacity onPress={() => {props.set(!props.up); props.setLogin(!props.loginUp)}} style={styles.registerBtn} activeOpacity={0.7}>
+            <TouchableOpacity onPress={() => {
+              props.set(!props.up); props.setLogin(!props.loginUp)
+              
+              submitUserData();
+              }} 
+              style={styles.registerBtn} 
+              activeOpacity={0.7}
+            >
                 <Text style={{...styles.text, letterSpacing: 3}}>REGISTER</Text>  
             </TouchableOpacity>
             </LinearGradient>
@@ -43,7 +91,9 @@ export default function Register(props){
           </View>
       </Modal>
 
-      <TouchableOpacity onPress={() => props.set(true)} style={{...styles.register, ...styles.text, fontSize: 22, letterSpacing: 4}}>
+      <TouchableOpacity onPress={() => { props.set(true) }} 
+        style={{...styles.register, ...styles.text, fontSize: 22, letterSpacing: 4}}
+      >
         <LinearGradient colors={LG.colors} start={LG.start} end={LG.end} locations={LG.locations} dither={false} style={styles.registerGradient}>
           <Text style={{...styles.text}}>REGISTER</Text>
         </LinearGradient>

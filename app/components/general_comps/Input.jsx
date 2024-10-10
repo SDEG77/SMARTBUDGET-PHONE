@@ -6,10 +6,13 @@ function Input({placeholder,
   inputMode = 'text', 
   fontSize = 17, 
   center = false, 
-  marginBottom = 10 }){
+  marginBottom = 10, 
+  onChangeText,
+  value
+}){
   
     return (
-    <TextInput inputMode={inputMode} style={{...styles.input, 
+    <TextInput value={value} onChangeText={onChangeText} inputMode={inputMode} style={{...styles.input, 
       height: height, 
       width: width, 
       fontSize: fontSize,
