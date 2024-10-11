@@ -6,6 +6,8 @@ import BackBtn from '../general_comps/BackBtn';
 import Input from '../general_comps/Input';
 import Break from '../general_comps/Break';
 
+const ip = require('../../address');
+
 export default function Register(props){
   let [name, setName] = useState('');
   let [email, setEmail] = useState('');
@@ -24,7 +26,7 @@ export default function Register(props){
   
     // if(user.password === user.passConfirm){
       try {
-        const response = await fetch('http://192.168.1.63:3000/api/user', { 
+        const response = await fetch(ip + '/api/user', { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -32,8 +34,7 @@ export default function Register(props){
           body: JSON.stringify(user),
         });
       
-        const data = await response.json(); 
-        console.log('Submitted successfully:', data);
+        console.warn('Registered successfully:');
       } catch (error) {
         console.error('Submission failed:', error);
       }
@@ -55,11 +56,6 @@ export default function Register(props){
 
             <Break />
             <Text style={{fontSize: 33, fontWeight: 'bold', letterSpacing: 2, marginBottom: 25}}>SIGNUP</Text>
-            <Text>
-            {name}
-            {email}
-            {password}
-            </Text>
             <Input value={name} onChangeText={setName} placeholder='Complete Name'/>
             <Input value={email} onChangeText={setEmail} placeholder='Email Address'/>
 

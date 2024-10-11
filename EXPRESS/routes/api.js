@@ -13,4 +13,23 @@ route.post('/user', (req, res) => {
   }
 });
 
+route.post('/user/login', (req, res) => {
+  let count;
+  
+  if (!req.body.email || !req.body.password){
+    console.log('MISSING INPUT DATA');
+  } else {
+    database.query(
+      `SELECT * FROM users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`,
+      (err, result) => {
+        if (err) {
+          console.warn('Unsuccessful retrieval')
+        } else {
+          res.json(result)
+        }
+      }
+    );
+  }   
+});
+
 module.exports = route;

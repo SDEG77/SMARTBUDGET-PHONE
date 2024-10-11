@@ -1,13 +1,65 @@
 import {StyleSheet, Text, View, TouchableWithoutFeedback, TouchableOpacity, Modal, Dimensions,} from 'react-native';
-import React, { useState } from 'react';
-import {Link} from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { Link , useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import BackBtn from '../general_comps/BackBtn';
 import Input from '../general_comps/Input';
 import Break from '../general_comps/Break';
 
+const ip = require('../../address');
+
 export default function Login(props){
+  let [email, setEmail] = useState('');
+  let [password, setPassword] = useState('');
+  let [ok, setOk] = useState('default');
+
+  const user = {
+    email: email,
+    password: password,
+  };
+
+  const submitUserData = async () => {
+      try {
+      const response = await fetch(ip + '/api/user/login', { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(user),
+        })
+
+        const data = await response.json(); 
+        console.log('Submitted successfully:', data);
+
+        if (data.length > 0) {
+          setOk(true);
+        } else {
+          setOk(false);
+          console.warn('Wrong password or email!')
+        }
+      } 
+      
+      catch (error){
+        console.error('Submission failed:', error);
+        setOk(false);
+      }
+  } 
+
+  const route = useRouter();
+
+  useEffect(() => {
+    if (ok === true) {
+      route.push('/InsideLayout')
+    } 
+    else if(ok === "default") {
+      null
+    }
+    else {
+      route.push('/')
+    }
+  }, [ok])
+
   return (
     <React.Fragment>
       <TouchableOpacity onPress={() => props.set(!props.up)} style={styles.btn} activeOpacity={0.65} hitSlop={{top: 5, bottom: 10, right: 5, left: 10}}>
@@ -24,15 +76,15 @@ export default function Login(props){
 
             <Break />
             <Text style={{fontSize: 33, fontWeight: 'bold', letterSpacing: 4, marginBottom: 30}}>LOGIN</Text>
-            <Input placeholder='Email Address' height={50}/>
+            <Input value={email} onChangeText={setEmail} placeholder='Email Address' height={50}/>
             <Break size={10}/>
-            <Input placeholder='Password' height={50}/>
+            <Input value={password} onChangeText={setPassword} placeholder='Password' height={50}/>
             <Text onPress={() => {props.setForgot(!props.forgot); props.set(!props.up)}} style={styles.forgot}>Forgot Password?</Text>
 
             <Break size={130}/>
 
             <LinearGradient colors={LG.colors} start={LG.start} end={LG.end} locations={LG.locations} dither={false} style={{borderRadius: 20}}>
-              <Link style={styles.loginBtn} href="/InsideLayout">
+              <Link onPress={async () => await submitUserData()} style={styles.loginBtn} href=''>
                   <Text style={{...styles.text, letterSpacing: 4}}>LOGIN</Text>  
               </Link>
             </LinearGradient>
